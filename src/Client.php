@@ -19,6 +19,9 @@ class Client extends GuzzleClient
 
     const PARAM_API_KEY = 'api_key';
 
+    const HEADER_USER_AGENT   = 'com.thisdata.api/php';
+    const HEADER_CONTENT_TYPE = 'application/json';
+
     /**
      * @var string
      */
@@ -30,15 +33,18 @@ class Client extends GuzzleClient
     private $version;
 
     /**
-     * @param string $apiKey
-     * @param int $version
+     * @param string $apiKey  The API key for your ThisData account
+     * @param int    $version The version of the ThisData API to use
+     * @param array  $options Extra options for the GuzzleClient
      */
-    public function __construct($apiKey, $version = 1)
+    public function __construct($apiKey, $version = 1, array $options = [])
     {
         $this->apiKey  = $apiKey;
         $this->version = $version;
 
-        parent::__construct($this->getDefaultConfiguration());
+        $options = array_merge($this->getDefaultConfiguration(), $options);
+
+        parent::__construct($options);
     }
 
     /**
@@ -53,9 +59,18 @@ class Client extends GuzzleClient
             'base_uri' => $this->getBaseUri(),
             'timeout'  => 2,
             'headers'  => [
-                'User-Agent' => $this->getUserAgent(),
+                'User-Agent'   => self::HEADER_USER_AGENT,
+                'Content-Type' => self::HEADER_CONTENT_TYPE,
             ]
         ];
+    }
+
+    /**
+     * @return null|callable
+     */
+    protected function getHandler()
+    {
+        return null;
     }
 
     /**
@@ -66,11 +81,21 @@ class Client extends GuzzleClient
      */
     protected function getHandlerStack()
     {
-        $handler = HandlerStack::create();
+        $handlerStack = HandlerStack::create($this->getHandler());
 
-        $handler->unshift($this->getApiKeyMiddleware());
+        $this->configureHandlerStack($handlerStack);
 
-        return $handler;
+        return $handlerStack;
+    }
+
+    /**
+     * Add any middleware required.
+     *
+     * @param HandlerStack $handlerStack
+     */
+    protected function configureHandlerStack(HandlerStack $handlerStack)
+    {
+        $handlerStack->unshift($this->getApiKeyMiddleware());
     }
 
     /**
@@ -105,16 +130,5 @@ class Client extends GuzzleClient
             static::API_HOST,
             $this->version
         );
-    }
-
-    /**
-     * Get the value of the User-Agent header to be sent with every API
-     * request.
-     *
-     * @return string
-     */
-    protected function getUserAgent()
-    {
-        return 'com.thisdata.api/php';
     }
 }
