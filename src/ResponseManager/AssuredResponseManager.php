@@ -17,7 +17,7 @@ class AssuredResponseManager implements ResponseManagerInterface
 
     public function __construct()
     {
-        register_shutdown_function($this);
+        register_shutdown_function([$this, 'onShutdown']);
     }
 
     /**
@@ -37,18 +37,16 @@ class AssuredResponseManager implements ResponseManagerInterface
      */
     protected function handlePromise(PromiseInterface $promise)
     {
-        if ('fulfilled' === $promise->getState()) {
-            return;
+        if (PromiseInterface::PENDING === $promise->getState()) {
+            $promise->wait();
         }
-
-        $promise->wait();
     }
 
     /**
      * When PHP shuts down at the end of the request, ensure all promises have
      * been fulfilled.
      */
-    public function __invoke()
+    public function onShutdown()
     {
         array_walk($this->promises, [$this, 'handlePromise']);
     }
