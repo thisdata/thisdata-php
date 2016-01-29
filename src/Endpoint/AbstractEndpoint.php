@@ -52,8 +52,8 @@ abstract class AbstractEndpoint
 
     /**
      * @param string $method HTTP method to use for the request
-     * @param string $verb ThisData verb to be used on this endpoint
-     * @param array $data Request body data containing event metadata
+     * @param string $verb   ThisData verb to be used on this endpoint
+     * @param array  $data   Request body data containing event metadata
      */
     protected function execute($method, $verb, array $data)
     {

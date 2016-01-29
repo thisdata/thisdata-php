@@ -6,6 +6,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Request;
 use ThisData\Api\ResponseManager\ResponseManagerInterface;
 
+/**
+ * Send API calls to the server asynchronously to avoid blocking execution of the service.
+ */
 class AsynchronousRequestHandler implements RequestHandlerInterface
 {
     /**
@@ -22,8 +25,6 @@ class AsynchronousRequestHandler implements RequestHandlerInterface
     }
 
     /**
-     * Send the response asynchronously
-     *
      * @param Client $client
      * @param Request $request
      */

@@ -4,6 +4,10 @@ namespace ThisData\Api\ResponseManager;
 
 use GuzzleHttp\Promise\PromiseInterface;
 
+/**
+ * Guarantees asynchronous requests have completed before system shutdown at
+ * the end of a request.
+ */
 class AssuredResponseManager implements ResponseManagerInterface
 {
     /**
@@ -40,6 +44,10 @@ class AssuredResponseManager implements ResponseManagerInterface
         $promise->wait();
     }
 
+    /**
+     * When PHP shuts down at the end of the request, ensure all promises have
+     * been fulfilled.
+     */
     public function __invoke()
     {
         array_walk($this->promises, [$this, 'handlePromise']);

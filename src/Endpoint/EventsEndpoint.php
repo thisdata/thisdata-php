@@ -4,6 +4,13 @@ namespace ThisData\Api\Endpoint;
 
 use ThisData\Api\ThisData;
 
+/**
+ * Events Endpoint
+ *
+ * Track events related to user security, and send them to ThisData.
+ *
+ * @see http://help.thisdata.com/docs/apiv1events
+ */
 class EventsEndpoint extends AbstractEndpoint
 {
     const VERB_LOG_IN        = 'log-in';
@@ -17,16 +24,36 @@ class EventsEndpoint extends AbstractEndpoint
     const PARAM_USER__EMAIL = 'email';
     const PARAM_USER_AGENT  = 'user_agent';
 
+    /**
+     * Track the successful authentication of a client.
+     *
+     * @param string $ip              The IP address of the client logging in
+     * @param array  $user            An array containing id, and optionally name, email
+     * @param string|null  $userAgent The browser user agent of the client logging in
+     */
     public function trackLogIn($ip, array $user, $userAgent = null)
     {
         $this->trackLogInAttempt(self::VERB_LOG_IN, $ip, $user, $userAgent);
     }
 
+    /**
+     * Track the unsuccessful authentication of a client.
+     *
+     * @param string $ip              The IP address of the client logging in
+     * @param array  $user            An array containing id, and optionally name, email
+     * @param string|null  $userAgent The browser user agent of the client logging in
+     */
     public function trackLogInDenied($ip, array $user, $userAgent = null)
     {
         $this->trackLogInAttempt(self::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
     }
 
+    /**
+     * @param string $verb
+     * @param string $ip
+     * @param array $user
+     * @param string|null $userAgent
+     */
     protected function trackLogInAttempt($verb, $ip, array $user, $userAgent = null)
     {
         $this->execute('POST', ThisData::ENDPOINT_EVENTS, [

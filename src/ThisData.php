@@ -5,6 +5,15 @@ namespace ThisData\Api;
 use ThisData\Api\Endpoint\EventsEndpoint;
 use ThisData\Api\RequestHandler\RequestHandlerInterface;
 
+/**
+ * ThisData Client
+ *
+ * Provides an abstraction over the pure HTTP client specific to interacting
+ * with the ThisData API.
+ *
+ * For advanced users only. All others, use the `Builder` class to create an
+ * instance.
+ */
 class ThisData
 {
     const ENDPOINT_EVENTS = 'events';

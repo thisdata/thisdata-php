@@ -8,6 +8,13 @@ use ThisData\Api\RequestHandler\SynchronousRequestHandler;
 use ThisData\Api\ResponseManager\AssuredResponseManager;
 use ThisData\Api\ResponseManager\ResponseManagerInterface;
 
+/**
+ * Builds an instance of ThisData.
+ *
+ * Given an API key from ThisData, this class provides a fluent programmatic
+ * interface for building an abstracted client capable of interacting with
+ * the ThisData API.
+ */
 class Builder
 {
     /**
@@ -49,6 +56,8 @@ class Builder
     }
 
     /**
+     * Set the ThisData API version to use. Defaults to 1.
+     *
      * @param string $version
      * @return Builder
      */
@@ -59,6 +68,8 @@ class Builder
     }
 
     /**
+     * Set whether to send requests asynchronously or synchronously.
+     *
      * @param boolean $async
      * @return Builder
      */
@@ -69,6 +80,9 @@ class Builder
     }
 
     /**
+     * Set arbitrary options on the Guzzle Client that will interact with the
+     * ThisData API.
+     *
      * @param string $option
      * @param mixed $value
      * @return $this
@@ -80,6 +94,8 @@ class Builder
     }
 
     /**
+     * Configure the response manager that manages asynchronous responses.
+     *
      * @param ResponseManagerInterface $responseManager
      * @return $this
      */
@@ -145,6 +161,9 @@ class Builder
     }
 
     /**
+     * Create an instance of the ThisData API client abstraction after
+     * configuration has been provided.
+     *
      * @return ThisData
      */
     public function build()
