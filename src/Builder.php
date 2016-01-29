@@ -95,30 +95,30 @@ class Builder
     protected function getResponseManager()
     {
         if (null === $this->responseManager) {
-            $this->responseManager = new AssuredResponseManager();
+            $this->responseManager = $this->buildResponseManager();
         }
 
         return $this->responseManager;
     }
 
     /**
+     * @return AssuredResponseManager
+     */
+    protected function buildResponseManager()
+    {
+        return new AssuredResponseManager();
+    }
+
+    /**
      * @return RequestHandlerInterface
      */
-    public function getRequestHandler()
+    protected function getRequestHandler()
     {
         if (null === $this->requestHandler) {
             $this->requestHandler = $this->buildRequestHandler();
         }
 
         return $this->requestHandler;
-    }
-
-    /**
-     * @return Client
-     */
-    protected function buildClient()
-    {
-        return new Client($this->apiKey, $this->version, $this->clientOptions);
     }
 
     /**
@@ -131,8 +131,17 @@ class Builder
                 return new SynchronousRequestHandler();
             case true:
             default:
-                return new AsynchronousRequestHandler($this->getResponseManager());
+                $responseManager = $this->getResponseManager();
+                return new AsynchronousRequestHandler($responseManager);
         }
+    }
+
+    /**
+     * @return Client
+     */
+    protected function buildClient()
+    {
+        return new Client($this->apiKey, $this->version, $this->clientOptions);
     }
 
     /**
@@ -144,5 +153,21 @@ class Builder
         $requestHandler = $this->getRequestHandler();
 
         return new ThisData($client, $requestHandler);
+    }
+
+    /**
+     * Build and return a ThisData instance based on the default configuration.
+     *
+     * @param string $apiKey
+     * @return ThisData
+     */
+    public static function create($apiKey)
+    {
+        $class = static::class;
+
+        /** @var Builder $builder */
+        $builder = new $class($apiKey);
+
+        return $builder->build();
     }
 }
