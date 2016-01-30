@@ -75,7 +75,7 @@ class Builder
      */
     public function setAsync($async)
     {
-        $this->async = $async;
+        $this->async = (bool)$async;
         return $this;
     }
 
