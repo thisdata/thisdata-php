@@ -24,7 +24,7 @@ $thisData = ThisData::create($apiKey);
 
 Alternatively, you can provide more customisation by using an instance of the builder.
 
-```
+```php
 use ThisData\Api\Builder;
 $builder = new Builder($apiKey);
 // Configure the builder here. See the Advanced section below for more details.
