@@ -90,3 +90,10 @@ can be retrieved from an endpoint.
 /** @var GuzzleHttp\Client $guzzle */
 $guzzle = $events->getClient();
 ```
+
+Alternatively, you can instantiate the client manually, without the added endpoint abstration layers.
+
+```php
+$client = new ThisData\Api\Client('<API_KEY>'); // An extension of the GuzzleHttp\Client class
+$client->post('events', ['body' => '{"ip":"127.0.0.1"}']);
+```
