@@ -61,4 +61,14 @@ abstract class AbstractEndpoint
 
         $this->handler->handle($this->client, $request);
     }
+
+    /**
+     * Return the Guzzle HTTP client.
+     *
+     * @return Client
+     */
+    public function getClient()
+    {
+        return $this->client;
+    }
 }
