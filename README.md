@@ -52,6 +52,10 @@ $events->trackLogIn($ip, $user, $userAgent);
 $events->trackLogInDenied($ip, $user, $userAgent);
 ```
 
+Current endpoints supported are:
+
+- [Events](http://help.thisdata.com/docs/apiv1events)
+
 ## Advanced
 
 There are several configuration changes that modify the way the library behaves.
