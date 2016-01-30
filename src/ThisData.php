@@ -34,6 +34,13 @@ class ThisData
     private $endpoints = [];
 
     /**
+     * @var array
+     */
+    private static $endpointClassMap = [
+        self::ENDPOINT_EVENTS => EventsEndpoint::class,
+    ];
+
+    /**
      * @param Client $client
      * @param RequestHandlerInterface $handler
      */
@@ -48,24 +55,36 @@ class ThisData
      */
     public function getEventsEndpoint()
     {
-        return $this->getOrCreateEndpoint(self::ENDPOINT_EVENTS, function () {
-            return new EventsEndpoint($this->client, $this->handler);
-        });
+        return $this->getOrCreateEndpoint(self::ENDPOINT_EVENTS);
     }
 
     /**
      * Create or return an cached instance of the requested endpoint.
      *
      * @param string $endpoint
-     * @param callable $builder
      * @return object
+     * @throws \Exception
      */
-    private function getOrCreateEndpoint($endpoint, callable $builder)
+    private function getOrCreateEndpoint($endpoint)
     {
         if (!array_key_exists($endpoint, $this->endpoints)) {
-            $this->endpoints[$endpoint] = call_user_func($builder);
+            if (!array_key_exists($endpoint, self::$endpointClassMap)) {
+                throw new \Exception(sprintf('Unknown endpoint "%s"', $endpoint));
+            }
+
+            $endpointClass = self::$endpointClassMap[$endpoint];
+            $this->endpoints[$endpoint] = $this->createEndpoint($endpointClass);
         }
 
         return $this->endpoints[$endpoint];
+    }
+
+    /**
+     * @param string $class
+     * @return mixed
+     */
+    private function createEndpoint($class)
+    {
+        return new $class($this->client, $this->handler);
     }
 }
