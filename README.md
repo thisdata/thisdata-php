@@ -26,7 +26,7 @@ Alternatively, you can provide more customisation by using an instance of the bu
 
 ```
 $builder = new Builder($apiKey);
-// Confiugre the builder here. See the Advanced section below for more details.
+// Configure the builder here. See the Advanced section below for more details.
 $thisData = $builder->build();
 ```
 
