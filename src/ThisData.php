@@ -87,4 +87,15 @@ class ThisData
     {
         return new $class($this->client, $this->handler);
     }
+
+    /**
+     * Build and return a ThisData instance based on the default configuration.
+     *
+     * @param string $apiKey
+     * @return ThisData
+     */
+    public static function create($apiKey)
+    {
+        return (new Builder($apiKey))->build();
+    }
 }

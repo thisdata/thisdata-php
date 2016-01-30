@@ -12,19 +12,20 @@ composer require thisdata/api
 
 ## Quick Start
 
-Use the builder to return an instance of `ThisData\Api\ThisData`, configured with default settings.
+Use the factory to return an instance of `ThisData\Api\ThisData`, configured with default settings.
 
 ```php
-use ThisData\Api\Builder;
+use ThisData\Api\ThisData;
 
 $apiKey = '<API_KEY>';
 
-$thisData = Builder::create($apiKey);
+$thisData = ThisData::create($apiKey);
 ```
 
 Alternatively, you can provide more customisation by using an instance of the builder.
 
 ```
+use ThisData\Api\Builder;
 $builder = new Builder($apiKey);
 // Configure the builder here. See the Advanced section below for more details.
 $thisData = $builder->build();

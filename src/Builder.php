@@ -173,20 +173,4 @@ class Builder
 
         return new ThisData($client, $requestHandler);
     }
-
-    /**
-     * Build and return a ThisData instance based on the default configuration.
-     *
-     * @param string $apiKey
-     * @return ThisData
-     */
-    public static function create($apiKey)
-    {
-        $class = static::class;
-
-        /** @var Builder $builder */
-        $builder = new $class($apiKey);
-
-        return $builder->build();
-    }
 }
