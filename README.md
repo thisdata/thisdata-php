@@ -22,6 +22,10 @@ $apiKey = '<API_KEY>';
 $thisData = ThisData::create($apiKey);
 ```
 
+> :warning: It is important to ensure your API key is not committed to source control. Treat this API key like a
+sensitive password. The API key might be passed in as an environment variable, or perhaps you have a configuration
+solution that allows you to store secrets in local configuration without being shared.
+
 Alternatively, you can provide more customisation by using an instance of the builder.
 
 ```php
