@@ -2,6 +2,8 @@
 
 namespace ThisData\Api\Endpoint;
 
+use ThisData\Api\Event\AuthenticationEvent;
+use ThisData\Api\Model\UserInterface;
 use ThisData\Api\ThisData;
 
 /**
@@ -27,25 +29,40 @@ class EventsEndpoint extends AbstractEndpoint
     /**
      * Track the successful authentication of a client.
      *
-     * @param string $ip              The IP address of the client logging in
-     * @param array  $user            An array containing id, and optionally name, email
-     * @param string|null  $userAgent The browser user agent of the client logging in
+     * @param AuthenticationEvent $event
      */
-    public function trackLogIn($ip, array $user, $userAgent = null)
+    public function trackLogIn(AuthenticationEvent $event)
     {
-        $this->trackLogInAttempt(self::VERB_LOG_IN, $ip, $user, $userAgent);
+        $user = $event->getUser();
+        $userPayload = $this->getUserPayload($user);
+
+        $this->trackLogInAttempt(self::VERB_LOG_IN, $event->getIp(), $userPayload, $event->getUserAgent());
     }
 
     /**
      * Track the unsuccessful authentication of a client.
      *
-     * @param string $ip              The IP address of the client logging in
-     * @param array  $user            An array containing id, and optionally name, email
-     * @param string|null  $userAgent The browser user agent of the client logging in
+     * @param AuthenticationEvent $event
      */
-    public function trackLogInDenied($ip, array $user, $userAgent = null)
+    public function trackLogInDenied(AuthenticationEvent $event)
     {
-        $this->trackLogInAttempt(self::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
+        $user = $event->getUser();
+        $userPayload = $this->getUserPayload($user);
+
+        $this->trackLogInAttempt(self::VERB_LOG_IN_DENIED, $event->getIp(), $userPayload, $event->getUserAgent());
+    }
+
+    /**
+     * @param UserInterface $user
+     * @return array
+     */
+    private function getUserPayload(UserInterface $user)
+    {
+        return [
+            self::PARAM_USER__ID    => $user->getId(),
+            self::PARAM_USER__NAME  => $user->getName(),
+            self::PARAM_USER__EMAIL => $user->getEmail(),
+        ];
     }
 
     /**
