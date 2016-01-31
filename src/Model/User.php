@@ -82,7 +82,13 @@ class User implements UserInterface
      */
     public function setEmail($email)
     {
-        $this->email = $email;
+        $validatedEmail = filter_var($email, FILTER_VALIDATE_EMAIL);
+
+        if (false === $validatedEmail) {
+            throw new \InvalidArgumentException(sprintf('IP address "%s" is not valid.', $email));
+        }
+
+        $this->email = $validatedEmail;
         return $this;
     }
 }

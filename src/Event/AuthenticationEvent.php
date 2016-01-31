@@ -29,9 +29,9 @@ class AuthenticationEvent
      */
     public function __construct($ip, UserInterface $user, $userAgent = null)
     {
-        $this->ip = $ip;
-        $this->user = $user;
-        $this->userAgent = $userAgent;
+        $this->setIp($ip);
+        $this->setUser($user);
+        $this->setUserAgent($userAgent);
     }
 
     /**
@@ -48,7 +48,13 @@ class AuthenticationEvent
      */
     public function setIp($ip)
     {
-        $this->ip = $ip;
+        $validatedIp = filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4 & FILTER_FLAG_NO_PRIV_RANGE);
+
+        if (false === $validatedIp) {
+            throw new \InvalidArgumentException(sprintf('IP address "%s" is not valid.', $ip));
+        }
+
+        $this->ip = $validatedIp;
         return $this;
     }
 
