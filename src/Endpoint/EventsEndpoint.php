@@ -33,7 +33,7 @@ class EventsEndpoint extends AbstractEndpoint
      */
     public function trackLogIn($ip, array $user, $userAgent = null)
     {
-        $this->trackLogInAttempt(self::VERB_LOG_IN, $ip, $user, $userAgent);
+        $this->trackEvent(self::VERB_LOG_IN, $ip, $user, $userAgent);
     }
 
     /**
@@ -45,7 +45,7 @@ class EventsEndpoint extends AbstractEndpoint
      */
     public function trackLogInDenied($ip, array $user, $userAgent = null)
     {
-        $this->trackLogInAttempt(self::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
+        $this->trackEvent(self::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
     }
 
     /**
@@ -54,7 +54,7 @@ class EventsEndpoint extends AbstractEndpoint
      * @param array $user
      * @param string|null $userAgent
      */
-    protected function trackLogInAttempt($verb, $ip, array $user, $userAgent = null)
+    public function trackEvent($verb, $ip, array $user, $userAgent = null)
     {
         $this->execute('POST', ThisData::ENDPOINT_EVENTS, [
             self::PARAM_VERB => $verb,
