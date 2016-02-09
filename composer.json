@@ -18,7 +18,12 @@
     ],
     "autoload": {
         "psr-4": {
-            "ThisData\\Api\\": ["src", "tests"]
+            "ThisData\\Api\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "ThisData\\Api\\": "tests/"
         }
     }
 }
