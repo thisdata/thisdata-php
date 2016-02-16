@@ -3,26 +3,19 @@
 namespace ThisData\Api\RequestHandler;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Promise\Promise;
+use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
-use ThisData\Api\ResponseManager\ResponseManagerInterface;
 
 /**
  * Send API calls to the server asynchronously to avoid blocking execution of the service.
  */
-class AsynchronousRequestHandler implements RequestHandlerInterface
+class AsynchronousRequestHandler extends AbstractRequestHandler
 {
     /**
-     * @var ResponseManagerInterface
+     * @var array
      */
-    private $responseManager;
-
-    /**
-     * @param ResponseManagerInterface $responseManager
-     */
-    public function __construct(ResponseManagerInterface $responseManager)
-    {
-        $this->responseManager = $responseManager;
-    }
+    private $promises = [];
 
     /**
      * @param Client $client
@@ -30,6 +23,21 @@ class AsynchronousRequestHandler implements RequestHandlerInterface
      */
     public function handle(Client $client, Request $request)
     {
-        $this->responseManager->manageResponse($client->sendAsync($request));
+        $this->promises = $this->send($client, $request);
+    }
+
+    /**
+     * @param Promise $promise
+     */
+    protected function wait(Promise $promise)
+    {
+        if (PromiseInterface::PENDING === $promise->getState()) {
+            $promise->wait();
+        }
+    }
+
+    public function __destruct()
+    {
+        array_walk($this->promises, [$this, 'wait']);
     }
 }

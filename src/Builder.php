@@ -2,11 +2,11 @@
 
 namespace ThisData\Api;
 
+use ThisData\Api\Event\EventDispatcher;
+use ThisData\Api\Event\EventDispatcherInterface;
 use ThisData\Api\RequestHandler\AsynchronousRequestHandler;
 use ThisData\Api\RequestHandler\RequestHandlerInterface;
 use ThisData\Api\RequestHandler\SynchronousRequestHandler;
-use ThisData\Api\ResponseManager\AssuredResponseManager;
-use ThisData\Api\ResponseManager\ResponseManagerInterface;
 
 /**
  * Builds an instance of ThisData.
@@ -38,14 +38,14 @@ class Builder
     private $clientOptions = [];
 
     /**
-     * @var ResponseManagerInterface
-     */
-    private $responseManager;
-
-    /**
      * @var RequestHandlerInterface
      */
     private $requestHandler;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
 
     /**
      * @param string $apiKey
@@ -94,35 +94,19 @@ class Builder
     }
 
     /**
-     * Configure the response manager that manages asynchronous responses.
-     *
-     * @param ResponseManagerInterface $responseManager
-     * @return $this
+     * @param RequestHandlerInterface $requestHandler
      */
-    public function setResponseManager(ResponseManagerInterface $responseManager)
+    public function setRequestHandler(RequestHandlerInterface $requestHandler)
     {
-        $this->responseManager = $responseManager;
-        return $this;
+        $this->requestHandler = $requestHandler;
     }
 
     /**
-     * @return ResponseManagerInterface
+     * @param EventDispatcherInterface $dispatcher
      */
-    protected function getResponseManager()
+    public function setDispatcher(EventDispatcherInterface $dispatcher)
     {
-        if (null === $this->responseManager) {
-            $this->responseManager = $this->buildResponseManager();
-        }
-
-        return $this->responseManager;
-    }
-
-    /**
-     * @return AssuredResponseManager
-     */
-    protected function buildResponseManager()
-    {
-        return new AssuredResponseManager();
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -138,18 +122,36 @@ class Builder
     }
 
     /**
+     * @return EventDispatcherInterface
+     */
+    protected function getDispatcher()
+    {
+        if (null === $this->dispatcher) {
+            $this->dispatcher = $this->buildDispatcher();
+        }
+
+        return $this->dispatcher;
+    }
+
+    /**
      * @return RequestHandlerInterface
      */
     protected function buildRequestHandler()
     {
+        $dispatcher = $this->getDispatcher();
+
         switch ($this->async) {
             case false:
-                return new SynchronousRequestHandler();
+                return new SynchronousRequestHandler($dispatcher);
             case true:
             default:
-                $responseManager = $this->getResponseManager();
-                return new AsynchronousRequestHandler($responseManager);
+                return new AsynchronousRequestHandler($dispatcher);
         }
+    }
+
+    protected function buildDispatcher()
+    {
+        return new EventDispatcher();
     }
 
     /**

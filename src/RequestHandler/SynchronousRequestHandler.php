@@ -9,7 +9,7 @@ use GuzzleHttp\Psr7\Request;
  * Send events to ThisData in real time, blocking execution of the service
  * until the request/response cycle is complete.
  */
-class SynchronousRequestHandler implements RequestHandlerInterface
+class SynchronousRequestHandler extends AbstractRequestHandler
 {
     /**
      * @param Client $client
@@ -17,6 +17,6 @@ class SynchronousRequestHandler implements RequestHandlerInterface
      */
     public function handle(Client $client, Request $request)
     {
-        $client->send($request);
+        $this->send($client, $request)->wait();
     }
 }
