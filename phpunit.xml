@@ -5,7 +5,6 @@
          beStrictAboutOutputDuringTests="true"
          beStrictAboutTestsThatDoNotTestAnything="true"
          beStrictAboutTodoAnnotatedTests="true"
-         checkForUnintentionallyCoveredCode="true"
          verbose="true">
     <testsuite name="unit">
         <directory suffix="Test.php">tests</directory>
