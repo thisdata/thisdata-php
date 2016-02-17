@@ -33,9 +33,9 @@ class EventDispatcher implements EventDispatcherInterface
 
     /**
      * @param string $eventName
-     * @param callable $callback
+     * @throws \InvalidArgumentException
      */
-    public function listen($eventName, callable $callback)
+    protected function validateEvent($eventName)
     {
         if (!in_array($eventName, self::$events)) {
             throw new \InvalidArgumentException(sprintf(
@@ -44,8 +44,17 @@ class EventDispatcher implements EventDispatcherInterface
                 implode('", "', self::$events)
             ));
         }
+    }
 
-        $this->listeners[$eventName] = $callback;
+    /**
+     * @param string $eventName
+     * @param callable $callback
+     */
+    public function listen($eventName, callable $callback)
+    {
+        $this->validateEvent($eventName);
+
+        $this->listeners[$eventName][] = $callback;
     }
 
     /**
@@ -54,16 +63,18 @@ class EventDispatcher implements EventDispatcherInterface
      */
     public function dispatch($eventName, EventInterface $event)
     {
-        array_walk($this->listeners[$eventName], [$this, 'dispatchToListener'], $event->getResponse());
+        $this->validateEvent($eventName);
+
+        array_walk($this->listeners[$eventName], [$this, 'dispatchToListener'], $event);
     }
 
     /**
      * @param callable $callback
      * @param int $i
-     * @param Response $response
+     * @param mixed $subject
      */
-    protected function dispatchToListener(callable $callback, $i, Response $response)
+    protected function dispatchToListener(callable $callback, $i, $subject)
     {
-        call_user_func_array($callback, [$response]);
+        call_user_func_array($callback, [$subject]);
     }
 }

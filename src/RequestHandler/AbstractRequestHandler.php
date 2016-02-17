@@ -38,7 +38,7 @@ abstract class AbstractRequestHandler implements RequestHandlerInterface
      */
     public function handleSuccess(ResponseInterface $response)
     {
-        $event = new Event($response);
+        $event = Event::success($response);
 
         $this->getDispatcher()->dispatch(
             EventDispatcherInterface::EVENT_REQUEST_SUCCESS,
@@ -51,11 +51,10 @@ abstract class AbstractRequestHandler implements RequestHandlerInterface
      */
     public function handleError(RequestException $e)
     {
-        $response = $e->getResponse();
-        $event    = new Event($response);
+        $event = Event::error($e);
 
         $this->getDispatcher()->dispatch(
-            EventDispatcherInterface::EVENT_REQUEST_SUCCESS,
+            EventDispatcherInterface::EVENT_REQUEST_ERROR,
             $event
         );
     }

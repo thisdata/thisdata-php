@@ -4,8 +4,8 @@ namespace ThisData\Api\RequestHandler;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
-use GuzzleHttp\Promise\PromiseInterface;
 use GuzzleHttp\Psr7\Request;
+use ThisData\Api\Event\EventDispatcherInterface;
 
 /**
  * Send API calls to the server asynchronously to avoid blocking execution of the service.
@@ -18,12 +18,22 @@ class AsynchronousRequestHandler extends AbstractRequestHandler
     private $promises = [];
 
     /**
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function __construct(EventDispatcherInterface $dispatcher)
+    {
+        parent::__construct($dispatcher);
+
+        register_shutdown_function([$this, 'waitForResponses']);
+    }
+
+    /**
      * @param Client $client
      * @param Request $request
      */
     public function handle(Client $client, Request $request)
     {
-        $this->promises = $this->send($client, $request);
+        $this->promises[] = $this->send($client, $request);
     }
 
     /**
@@ -31,12 +41,10 @@ class AsynchronousRequestHandler extends AbstractRequestHandler
      */
     protected function wait(Promise $promise)
     {
-        if (PromiseInterface::PENDING === $promise->getState()) {
-            $promise->wait();
-        }
+        $promise->wait();
     }
 
-    public function __destruct()
+    public function waitForResponses()
     {
         array_walk($this->promises, [$this, 'wait']);
     }

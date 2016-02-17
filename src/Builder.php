@@ -2,8 +2,11 @@
 
 namespace ThisData\Api;
 
+use GuzzleHttp\Exception\RequestException;
+use ThisData\Api\Event\ErrorEvent;
 use ThisData\Api\Event\EventDispatcher;
 use ThisData\Api\Event\EventDispatcherInterface;
+use ThisData\Api\Event\EventInterface;
 use ThisData\Api\RequestHandler\AsynchronousRequestHandler;
 use ThisData\Api\RequestHandler\RequestHandlerInterface;
 use ThisData\Api\RequestHandler\SynchronousRequestHandler;
@@ -149,9 +152,18 @@ class Builder
         }
     }
 
+    /**
+     * @return EventDispatcher
+     */
     protected function buildDispatcher()
     {
-        return new EventDispatcher();
+        $dispatcher = new EventDispatcher();
+
+        $dispatcher->listen(EventDispatcherInterface::EVENT_REQUEST_ERROR, function (EventInterface $event) {
+            error_log($event->getException()->getMessage());
+        });
+
+        return $dispatcher;
     }
 
     /**
