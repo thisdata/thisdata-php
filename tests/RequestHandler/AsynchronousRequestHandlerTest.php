@@ -5,15 +5,11 @@ namespace ThisData\Api\RequestHandler;
 use GuzzleHttp\Client;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Psr7\Request;
-use ThisData\Api\ResponseManager\AssuredResponseManager;
 
 class AsynchronousRequestHandlerTest extends \PHPUnit_Framework_TestCase
 {
     public function testHandle()
     {
-        $responseManager = $this->getMockBuilder(AssuredResponseManager::class)
-            ->getMock();
-
         $client = $this->getMockBuilder(Client::class)
             ->getMock();
 
@@ -26,11 +22,7 @@ class AsynchronousRequestHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($request)
             ->will($this->returnValue($expectedPromise));
 
-        $responseManager->expects($this->once())
-            ->method('manageResponse')
-            ->with($expectedPromise);
-
-        $handler = new AsynchronousRequestHandler($responseManager);
+        $handler = new AsynchronousRequestHandler();
         $handler->handle($client, $request);
     }
 }
