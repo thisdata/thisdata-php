@@ -2,8 +2,6 @@
 
 namespace ThisData\Api;
 
-use GuzzleHttp\Exception\RequestException;
-use ThisData\Api\Event\ErrorEvent;
 use ThisData\Api\Event\EventDispatcher;
 use ThisData\Api\Event\EventDispatcherInterface;
 use ThisData\Api\Event\EventInterface;
