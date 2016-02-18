@@ -2,6 +2,8 @@
 
 namespace ThisData\Api;
 
+use ThisData\Api\Event\EventDispatcher;
+
 class BuilderTest extends \PHPUnit_Framework_TestCase
 {
     const API_KEY = 'apikey';
@@ -45,6 +47,14 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
 
         $this->assertTrue(array_key_exists('option', $clientOptions));
         $this->assertSame($clientOptions['option'], 'value');
+    }
+
+    public function testSetDispatcher()
+    {
+        $dispatcher = $this->getMock(EventDispatcher::class);
+
+        $this->builder->setDispatcher($dispatcher);
+        $this->assertAttributeSame($dispatcher, 'dispatcher', $this->builder);
     }
 
     public function testBuild()
