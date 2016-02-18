@@ -33,6 +33,7 @@ class AsynchronousRequestHandler extends AbstractRequestHandler
      */
     public function handle(Client $client, Request $request)
     {
+        // TODO memory leak. Promises are never removed/GC'd.
         $this->promises[] = $this->send($client, $request);
     }
 

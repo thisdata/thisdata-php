@@ -2,27 +2,70 @@
 
 namespace ThisData\Api\RequestHandler;
 
-use GuzzleHttp\Client;
+use GuzzleHttp\Handler\MockHandler;
+use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Promise\Promise;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+use ThisData\Api\Event\EventDispatcher;
 
 class AsynchronousRequestHandlerTest extends \PHPUnit_Framework_TestCase
 {
-    public function testHandle()
+    const API_KEY = 'apikey';
+
+    /**
+     * @var \PHPUnit_Framework_MockObject_MockObject
+     */
+    private $dispatcher;
+
+    /**
+     * @var AsynchronousRequestHandler
+     */
+    private $handler;
+
+    public function setUp()
     {
-        $client = $this->getMockBuilder(Client::class)
+        $this->dispatcher = $this->getMockBuilder(EventDispatcher::class)
             ->getMock();
 
-        $request = new Request('get', 'uri');
+        $this->handler = new AsynchronousRequestHandler($this->dispatcher);
+    }
 
-        $expectedPromise = new Promise();
+    public function testHandle()
+    {
+        $client = $this->getMockClient();
+        $request = new Request('GET', '/');
 
-        $client->expects($this->once())
-            ->method('sendAsync')
-            ->with($request)
-            ->will($this->returnValue($expectedPromise));
+        $this->handler->handle($client, $request);
+        $this->assertAttributeCount(1, 'promises', $this->handler);
+    }
 
-        $handler = new AsynchronousRequestHandler();
-        $handler->handle($client, $request);
+    public function testWaitForResponses()
+    {
+        $promise = $this->getMockBuilder(Promise::class)
+            ->setMethods(['wait'])
+            ->getMock();
+
+        $promise->expects($this->once())
+            ->method('wait');
+
+        $property = new \ReflectionProperty($this->handler, 'promises');
+        $property->setAccessible(true);
+        $property->setValue($this->handler, [$promise]);
+
+        $this->handler->waitForResponses();
+    }
+
+    protected function getMockClient()
+    {
+        $mock = new MockHandler([
+            new Response(200),
+        ]);
+
+        $handler = HandlerStack::create($mock);
+
+        return new \ThisData\Api\Client(self::API_KEY, 1, [
+            'handler' => $handler,
+        ]);
     }
 }
