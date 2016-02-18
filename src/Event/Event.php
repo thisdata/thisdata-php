@@ -26,7 +26,7 @@ class Event implements EventInterface
         $this->response  = $response;
         $this->exception = $exception;
 
-        if (null === $response && $exception->hasResponse()) {
+        if (null === $response && ($exception && $exception->hasResponse())) {
             $this->response = $exception->getResponse();
         }
     }
