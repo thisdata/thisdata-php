@@ -83,6 +83,12 @@ building.
 $builder->setClientOption('proxy', 'tcp://localhost:8125');
 ```
 
+If you want to see the verbose output of the HTTP request, enable debug mode in Guzzle.
+
+```php
+$builder->setClientOption('debug', true);
+```
+
 All settings supported by the [Guzzle HTTP Client](http://docs.guzzlephp.org/en/latest) can be configured here,
 including [curl options](http://docs.guzzlephp.org/en/latest/faq.html#how-can-i-add-custom-curl-options).
 

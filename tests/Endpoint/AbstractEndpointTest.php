@@ -48,7 +48,9 @@ class AbstractEndpointTest extends \PHPUnit_Framework_TestCase
     public function testExecute()
     {
         $mockClient = new Client();
-        $mockHandler = $this->getMockBuilder(SynchronousRequestHandler::class)->getMock();
+        $mockHandler = $this->getMockBuilder(SynchronousRequestHandler::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
         $mockHandler
             ->expects($this->once())

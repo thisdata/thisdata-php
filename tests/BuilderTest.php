@@ -2,7 +2,7 @@
 
 namespace ThisData\Api;
 
-use ThisData\Api\ResponseManager\AssuredResponseManager;
+use ThisData\Api\Event\EventDispatcher;
 
 class BuilderTest extends \PHPUnit_Framework_TestCase
 {
@@ -49,29 +49,18 @@ class BuilderTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($clientOptions['option'], 'value');
     }
 
-    public function testSetResponseManager()
+    public function testSetDispatcher()
     {
-        $responseManager = new AssuredResponseManager();
-        $result = $this->builder->setResponseManager($responseManager);
+        $dispatcher = $this->getMock(EventDispatcher::class);
 
-        $this->assertInstanceOf(Builder::class, $result);
-        $this->assertAttributeSame($responseManager, 'responseManager', $this->builder);
+        $this->builder->setDispatcher($dispatcher);
+        $this->assertAttributeSame($dispatcher, 'dispatcher', $this->builder);
     }
 
     public function testBuild()
     {
         $client = $this->builder->build();
         $this->assertInstanceOf(ThisData::class, $client);
-    }
-
-    public function testCreate()
-    {
-        $client = Builder::create(self::API_KEY);
-        $this->assertInstanceOf(ThisData::class, $client);
-
-        BuilderStub::$test = $this;
-        BuilderStub::create(self::API_KEY);
-        $this->assertTrue($this->buildFlag, 'Child classes are respected');
     }
 
     private function assertFluentAttributeChange($attribute, $initial, $setter, $new)

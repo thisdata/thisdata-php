@@ -7,6 +7,10 @@ use ThisData\Api\RequestHandler\SynchronousRequestHandler;
 
 class ThisDataTest extends \PHPUnit_Framework_TestCase
 {
+    const API_KEY = 'apikey';
+
+    public $buildFlag = false;
+
     /**
      * @var \PHPUnit_Framework_MockObject_MockObject
      */
@@ -42,5 +46,11 @@ class ThisDataTest extends \PHPUnit_Framework_TestCase
 
         $endpoint2 = $this->thisData->getEventsEndpoint();
         $this->assertSame($endpoint, $endpoint2);
+    }
+
+    public function testCreate()
+    {
+        $client = ThisData::create(self::API_KEY);
+        $this->assertInstanceOf(ThisData::class, $client);
     }
 }
