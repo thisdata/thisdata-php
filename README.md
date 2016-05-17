@@ -22,7 +22,7 @@ $apiKey = '<API_KEY>';
 $thisData = ThisData::create($apiKey);
 ```
 
-> :warning: Don't commit your API key is to source control! Use an environment
+> :warning: Don't commit your API key to source control! Use an environment
   variable, or perhaps you have a configuration solution that allows you to
   store secrets in local configuration without being shared.
 
