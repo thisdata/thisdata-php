@@ -22,18 +22,9 @@ $apiKey = '<API_KEY>';
 $thisData = ThisData::create($apiKey);
 ```
 
-> :warning: It is important to ensure your API key is not committed to source control. Treat this API key like a
-sensitive password. The API key might be passed in as an environment variable, or perhaps you have a configuration
-solution that allows you to store secrets in local configuration without being shared.
-
-Alternatively, you can provide more customisation by using an instance of the builder.
-
-```php
-use ThisData\Api\Builder;
-$builder = new Builder($apiKey);
-// Configure the builder here. See the Advanced section below for more details.
-$thisData = $builder->build();
-```
+> :warning: Don't commit your API key to source control! Use an environment
+  variable, or perhaps you have a configuration solution that allows you to
+  store secrets in local configuration without being shared.
 
 Use the `$thisData` instance to get an instance of an endpoint, e.g. [events](http://help.thisdata.com/docs/apiv1events).
 
@@ -42,34 +33,52 @@ $events = $thisData->getEventsEndpoint();
 ```
 
 Each endpoint will have different methods, depending on the functionality the endpoint provides. For instance, the
-events endpoint can track successful and failed login attempts.
+events endpoint can track successful login attempts.
 
 ```php
 $ip = $_SERVER['REMOTE_ADDR'];
 $user = [
     'id' => '86',
     'name' => 'Maxwell Smart',
-    'email' => 'max@control.com'
+    'email' => 'max@control.com',
+    'mobile' => '+64270000001'
 ];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
 $events->trackLogIn($ip, $user, $userAgent);
-$events->trackLogInDenied($ip, $user, $userAgent);
+
+$verb = 'reset-password-attempt';
+$events->trackEvent($verb, $ip, $user, $userAgent);
 ```
 
-Current endpoints supported are:
+### API Documentation
+
+Documentation for API endpoints can be found here:
 
 - [Events](http://help.thisdata.com/docs/apiv1events)
 
 ## Advanced
 
-There are several configuration changes that modify the way the library behaves.
+There are several configuration options that modify the way the library behaves.
+By using the Builder you can set these configuration options.
+
+```php
+use ThisData\Api\Builder;
+$builder = new Builder($apiKey);
+
+// Configure the builder here. See below for more details.
+// ...
+// e.g. $builder->setAsync(false);
+// ...
+
+$thisData = $builder->build();
+```
 
 ### Synchronous Requests
 
 By default, requests are sent to the server asynchronously. If this is not required, or synchronous communication is
 preferred, configure your builder to use synchronous requests.
- 
+
 ```php
 $builder->setAsync(false);
 ```
@@ -108,3 +117,15 @@ Alternatively, you can instantiate the client manually, without the added endpoi
 $client = new ThisData\Api\Client('<API_KEY>'); // An extension of the GuzzleHttp\Client class
 $client->post('events', ['body' => '{"ip":"127.0.0.1"}']);
 ```
+
+## Contributing
+
+Thanks for helping! Start by forking the repository. Then make sure the tests pass:
+
+```
+composer install
+./vendor/bin/phpunit
+```
+
+Make your changes, add test coverage, and check the tests are still passing.
+Then open a PR! :)
