@@ -117,3 +117,15 @@ Alternatively, you can instantiate the client manually, without the added endpoi
 $client = new ThisData\Api\Client('<API_KEY>'); // An extension of the GuzzleHttp\Client class
 $client->post('events', ['body' => '{"ip":"127.0.0.1"}']);
 ```
+
+## Contributing
+
+Thanks for helping! Start by forking the repository. Then make sure the tests pass:
+
+```
+composer install
+./vendor/bin/phpunit
+```
+
+Make your changes, add test coverage, and check the tests are still passing.
+Then open a PR! :)
