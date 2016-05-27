@@ -1,4 +1,4 @@
-# ThisData API Client
+# ThisData API Client [![Build Status](https://travis-ci.org/thisdata/thisdata-php.png?branch=master)](https://travis-ci.org/thisdata/thisdata-php)
 
 Consume the [ThisData.com](https://thisdata.com/) REST API using this client. Requires at least PHP5.5.
 
@@ -38,9 +38,9 @@ events endpoint can track successful login attempts.
 ```php
 $ip = $_SERVER['REMOTE_ADDR'];
 $user = [
-    'id' => '86',
-    'name' => 'Maxwell Smart',
-    'email' => 'max@control.com',
+    'id' => 'johntitor',
+    'name' => 'John Titor',
+    'email' => 'john.titor@thisdata.com',
     'mobile' => '+64270000001'
 ];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
