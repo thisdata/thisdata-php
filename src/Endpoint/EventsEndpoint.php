@@ -93,4 +93,16 @@ class EventsEndpoint extends AbstractEndpoint
 
         $this->execute('POST', ThisData::ENDPOINT_EVENTS, array_filter($event));
     }
+
+    /**
+     * Gets events from the ThisData API.
+     * Available request parameters can be found here:
+     *  http://help.thisdata.com/docs/v1getevents
+     */
+    public function getEvents($options = null)
+    {
+        $url = ThisData::ENDPOINT_EVENTS . '?' . http_build_query($options);
+        $response = $this->synchronousExecute('GET', $url);
+        return json_decode($response->getBody(), TRUE);
+    }
 }
