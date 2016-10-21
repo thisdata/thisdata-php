@@ -19,13 +19,20 @@ abstract class AbstractEndpoint
     private $handler;
 
     /**
+     * @var Array
+     */
+    protected $configuration;
+
+    /**
      * @param Client $client
      * @param RequestHandlerInterface $handler
+     * @param array|null $configuration
      */
-    public function __construct(Client $client, RequestHandlerInterface $handler)
+    public function __construct(Client $client, RequestHandlerInterface $handler, array $configuration = null)
     {
         $this->client  = $client;
         $this->handler = $handler;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -38,7 +45,11 @@ abstract class AbstractEndpoint
      */
     protected function findValue($key, $pool, $default = null)
     {
-        return array_key_exists($key, $pool) ? $pool[$key] : $default;
+        if (is_null($pool)) {
+            return $default;
+        } else {
+            return array_key_exists($key, $pool) ? $pool[$key] : $default;
+        }
     }
 
     /**

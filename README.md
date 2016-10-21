@@ -47,8 +47,34 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
 $events->trackLogIn($ip, $user, $userAgent);
 
-$verb = 'reset-password-attempt';
+$verb = 'my-custom-verb';
 $events->trackEvent($verb, $ip, $user, $userAgent);
+```
+
+When the login attempt is unsuccessful:
+
+```php
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor',
+    'authenticated' => false
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$events->trackEvent(EventsEndpoint::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
+```
+
+When you're using a multi-tenanted app:
+
+```php
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor'
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$source = [
+    'name' => 'SubCustomer 1'
+]
+$events->trackLogIn($ip, $user, $userAgent, $source);
 ```
 
 ### API Documentation
@@ -69,6 +95,7 @@ $builder = new Builder($apiKey);
 // Configure the builder here. See below for more details.
 // ...
 // e.g. $builder->setAsync(false);
+// $builder->setExpectJsCookie(true);
 // ...
 
 $thisData = $builder->build();
@@ -81,6 +108,17 @@ preferred, configure your builder to use synchronous requests.
 
 ```php
 $builder->setAsync(false);
+```
+
+### ThisData's Javascript library
+
+ThisData's Javascript tracking code is optional, but when included in a page
+will add a cookie called `__tdli`. If you're using the optional javascript
+library, this library will automatically pick up that cookie.
+You should also tell the API that each request _should_ come with a cookie:
+
+```php
+$builder->setExpectJsCookie(true);
 ```
 
 ### Network Configuration

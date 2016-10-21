@@ -17,6 +17,7 @@ use ThisData\Api\RequestHandler\RequestHandlerInterface;
 class ThisData
 {
     const ENDPOINT_EVENTS = 'events';
+    const TD_COOKIE_NAME  = '__tdli';
 
     /**
      * @var Client
@@ -27,6 +28,11 @@ class ThisData
      * @var RequestHandlerInterface
      */
     private $handler;
+
+    /**
+     * @var Array
+     */
+    private $configuration;
 
     /**
      * @var array
@@ -43,11 +49,13 @@ class ThisData
     /**
      * @param Client $client
      * @param RequestHandlerInterface $handler
+     * @param array|null $configuration
      */
-    public function __construct(Client $client, RequestHandlerInterface $handler)
+    public function __construct(Client $client, RequestHandlerInterface $handler, array $configuration = null)
     {
         $this->client = $client;
         $this->handler = $handler;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -85,7 +93,7 @@ class ThisData
      */
     private function createEndpoint($class)
     {
-        return new $class($this->client, $this->handler);
+        return new $class($this->client, $this->handler, $this->configuration);
     }
 
     /**
