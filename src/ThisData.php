@@ -3,6 +3,7 @@
 namespace ThisData\Api;
 
 use ThisData\Api\Endpoint\EventsEndpoint;
+use ThisData\Api\Endpoint\VerifyEndpoint;
 use ThisData\Api\RequestHandler\RequestHandlerInterface;
 
 /**
@@ -17,6 +18,7 @@ use ThisData\Api\RequestHandler\RequestHandlerInterface;
 class ThisData
 {
     const ENDPOINT_EVENTS = 'events';
+    const ENDPOINT_VERIFY = 'verify';
     const TD_COOKIE_NAME  = '__tdli';
 
     /**
@@ -44,6 +46,7 @@ class ThisData
      */
     private static $endpointClassMap = [
         self::ENDPOINT_EVENTS => EventsEndpoint::class,
+        self::ENDPOINT_VERIFY => VerifyEndpoint::class
     ];
 
     /**
@@ -64,6 +67,14 @@ class ThisData
     public function getEventsEndpoint()
     {
         return $this->getOrCreateEndpoint(self::ENDPOINT_EVENTS);
+    }
+
+    /**
+     * @return VerifyEndpoint
+     */
+    public function getVerifyEndpoint()
+    {
+        return $this->getOrCreateEndpoint(self::ENDPOINT_VERIFY);
     }
 
     /**
