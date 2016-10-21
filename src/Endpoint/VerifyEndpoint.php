@@ -16,6 +16,8 @@ class VerifyEndpoint extends AbstractEndpoint
 {
 
     /**
+     * Hits the Verify API, and returns the JSON response.
+     *
      * @param string $verb
      * @param string $ip
      * @param array $user
@@ -67,6 +69,6 @@ class VerifyEndpoint extends AbstractEndpoint
         }
 
         $response = $this->synchronousExecute('POST', ThisData::ENDPOINT_VERIFY, array_filter($event));
-        return json_decode($response->getBody());
+        return json_decode($response->getBody(), TRUE);
     }
 }
