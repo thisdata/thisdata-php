@@ -74,6 +74,107 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
         $this->assertTrack($expected);
     }
 
+    public function testTrackEventSendsSourceWhenPresent()
+    {
+        $expected = [
+            'ip' => '1.2.3.4',
+            'user' => array(),
+            'source' => [
+              'name' => "Foo Bar",
+              'logo_url' => "abcd"
+            ],
+            'session' => array(),
+            'device' => array(),
+            'user_agent' => 'useragent',
+            'endpoint' => 'events',
+            'method' => 'POST',
+            'verb' => 'page-view',
+        ];
+
+        $this->endpoint->expects($this->once())
+            ->method('execute')
+            ->with(
+                $expected['method'],
+                $expected['endpoint'],
+                $this->callback(function ($data) use ($expected) {
+                    return
+                         array_key_exists('source', $data)
+                            && array_key_exists('name', $data['source']) && $data['source']['name'] == $expected['source']['name']
+                            && array_key_exists('logo_url', $data['source']) && $data['source']['logo_url'] == $expected['source']['logo_url'];
+                })
+            );
+
+        $this->endpoint->trackEvent($expected['verb'], $expected['ip'], $expected['user'], $expected['user_agent'], $expected['source'], $expected['session'], $expected['device']);
+    }
+
+    public function testTrackEventSendsSessionCookieWhenPresent()
+    {
+        $expected = [
+            'ip' => '1.2.3.4',
+            'user' => array(),
+            'source' => array(),
+            'session' => [
+              "id" => "abcd1234"
+            ],
+            'device' => array(),
+            'user_agent' => 'useragent',
+            'endpoint' => 'events',
+            'method' => 'POST',
+            'verb' => 'page-view',
+        ];
+
+        $expectedCookieId = '11223344-abcd-998877';
+        $_COOKIE['__tdli'] = $expectedCookieId;
+
+        $this->endpoint->expects($this->once())
+            ->method('execute')
+            ->with(
+                $expected['method'],
+                $expected['endpoint'],
+                $this->callback(function ($data) use ($expected, $expectedCookieId) {
+                    return
+                         array_key_exists('session', $data)
+                            && array_key_exists('id', $data['session']) && $data['session']['id'] == $expected['session']['id']
+                            && array_key_exists('td_cookie_id', $data['session']) && $data['session']['td_cookie_id'] == $expectedCookieId;
+                })
+            );
+
+        $this->endpoint->trackEvent($expected['verb'], $expected['ip'], $expected['user'], $expected['user_agent'], $expected['source'], $expected['session'], $expected['device']);
+    }
+
+    public function testTrackEventSendsDeviceWhenPresent()
+    {
+        $expected = [
+            'ip' => '1.2.3.4',
+            'user' => array(),
+            'source' => array(),
+            'session' => array(),
+            'device' => [
+                'id' => 'abcd1234'
+            ],
+            'user_agent' => 'useragent',
+            'endpoint' => 'events',
+            'method' => 'POST',
+            'verb' => 'page-view',
+        ];
+
+        $this->endpoint->expects($this->once())
+            ->method('execute')
+            ->with(
+                $expected['method'],
+                $expected['endpoint'],
+                $this->callback(function ($data) use ($expected) {
+                    return
+                         array_key_exists('device', $data)
+                            && array_key_exists('id', $data['device']) && $data['device']['id'] == $expected['device']['id'];
+                })
+            );
+
+        $this->endpoint->trackEvent($expected['verb'], $expected['ip'], $expected['user'], $expected['user_agent'], $expected['source'], $expected['session'], $expected['device']);
+    }
+
+    // Helper methods
+
     protected function assertTrackingWithHelper($expected, $method)
     {
         $this->endpoint->expects($this->once())
@@ -98,7 +199,7 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
         $this->endpoint->$method($expected['ip'], $expected['user'], $expected['user_agent']);
     }
 
-    protected function assertTrack($expected)
+    protected function assertTrack($expected, $callback=null)
     {
         $this->endpoint->expects($this->once())
             ->method('execute')
