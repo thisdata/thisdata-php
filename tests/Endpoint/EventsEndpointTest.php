@@ -199,7 +199,7 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
         $this->endpoint->$method($expected['ip'], $expected['user'], $expected['user_agent']);
     }
 
-    protected function assertTrack($expected, $callback=null)
+    protected function assertTrack($expected)
     {
         $this->endpoint->expects($this->once())
             ->method('execute')
