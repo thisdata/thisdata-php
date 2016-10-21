@@ -26,14 +26,26 @@ $thisData = ThisData::create($apiKey);
   variable, or perhaps you have a configuration solution that allows you to
   store secrets in local configuration without being shared.
 
-Use the `$thisData` instance to get an instance of an endpoint, e.g. [events](http://help.thisdata.com/docs/apiv1events).
+
+Each endpoint will have different methods, depending on the functionality the endpoint provides. For instance, the
+events endpoint can track successful login attempts.
+
+### API Documentation
+
+Documentation for API endpoints can be found here:
+
+- [Events](http://help.thisdata.com/docs/apiv1events)
+- [Verify](http://help.thisdata.com/docs/apiv1verify)
+
+### Tracking Events
+
+Use the `$thisData` instance to get an instance of the events endpoint.
 
 ```php
 $events = $thisData->getEventsEndpoint();
 ```
 
-Each endpoint will have different methods, depending on the functionality the endpoint provides. For instance, the
-events endpoint can track successful login attempts.
+Then track events:
 
 ```php
 $ip = $_SERVER['REMOTE_ADDR'];
@@ -77,11 +89,33 @@ $source = [
 $events->trackLogIn($ip, $user, $userAgent, $source);
 ```
 
-### API Documentation
+### Verifying a User
 
-Documentation for API endpoints can be found here:
+When a sensitive action is about to occur, perhaps before finalizing the
+log-in process, you can verify that the user is who they say they are, and check
+the risk that their account is being impersonated by an attacker.
+If they present a medium or high risk, force them to prove a two-factor
+ authentication code.
 
-- [Events](http://help.thisdata.com/docs/apiv1events)
+
+```php
+$endpoint = $thisData->getVerifyEndpoint();
+
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor'
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+$response = $endpoint->verify($ip, $user, $userAgent);
+
+if ($response['risk_level'] != "green") {
+    # Ask for Two Factor Authentication code
+} else {
+    # Everything is OK
+}
+```
+
 
 ## Advanced
 
