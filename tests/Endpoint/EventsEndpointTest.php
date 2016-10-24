@@ -1,6 +1,7 @@
 <?php
 
 namespace ThisData\Api\Endpoint;
+use GuzzleHttp\Psr7\Response;
 
 class EventsEndpointTest extends \PHPUnit_Framework_TestCase
 {
@@ -13,7 +14,7 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
     {
         $this->endpoint = $this->getMockBuilder(EventsEndpoint::class)
             ->disableOriginalConstructor()
-            ->setMethods(['execute'])
+            ->setMethods(['execute', 'synchronousExecute'])
             ->getMock();
     }
 
@@ -171,6 +172,48 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
             );
 
         $this->endpoint->trackEvent($expected['verb'], $expected['ip'], $expected['user'], $expected['user_agent'], $expected['source'], $expected['session'], $expected['device']);
+    }
+
+    public function testGetEventsIsFilterable()
+    {
+
+        $this->endpoint->expects($this->once())
+            ->method('synchronousExecute')
+            ->with(
+                'GET',
+                'events?verb=log-in&user_id=112233&limit=10'
+            )
+            ->willReturn(new Response(200));
+
+        $options = [
+            "verb" => "log-in",
+            "user_id" => 112233,
+            "limit" => 10
+        ];
+
+        $this->endpoint->getEvents($options);
+    }
+
+    public function testGetEventsReturnsJSON()
+    {
+
+        $body = '[{"verb" : "log-in", "user" : {"id" : "112233"}, "overall_score" : 0.5}, {"verb" : "log-in", "user" : {"id" : "445566"}, "overall_score" : 0.1}]';
+
+        $this->endpoint->expects($this->once())
+            ->method('synchronousExecute')
+            ->with(
+                'GET',
+                'events'
+            )
+            ->willReturn(new Response(200, array(), $body, '1.1'));
+
+        $events = $this->endpoint->getEvents();
+
+        $this->assertSame(count($events), 2);
+        $this->assertSame($events[0]['user']['id'], "112233");
+        $this->assertSame($events[0]['overall_score'], 0.5);
+        $this->assertSame($events[1]['user']['id'], "445566");
+        $this->assertSame($events[1]['overall_score'], 0.1);
     }
 
     // Helper methods

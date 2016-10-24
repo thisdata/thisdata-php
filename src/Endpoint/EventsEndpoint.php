@@ -114,7 +114,10 @@ class EventsEndpoint extends AbstractEndpoint
      */
     public function getEvents($options = null)
     {
-        $url = ThisData::ENDPOINT_EVENTS . '?' . http_build_query($options);
+        $url = ThisData::ENDPOINT_EVENTS;
+        if (!is_null($options)) {
+            $url .= '?' . http_build_query($options);
+        }
         $response = $this->synchronousExecute('GET', $url);
         return json_decode($response->getBody(), TRUE);
     }
