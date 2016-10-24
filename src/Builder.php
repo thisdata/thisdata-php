@@ -208,9 +208,9 @@ class Builder
         $requestHandler = $this->getRequestHandler();
         // Pass through any configuration options set here which need to be made
         // available elsewhere in the ThisData instance.
-        $configuration  = array(
+        $configuration  = [
             self::CONF_EXPECT_JS_COOKIE => $this->expectJsCookie
-        );
+        ];
 
         return new ThisData($client, $requestHandler, $configuration);
     }

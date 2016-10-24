@@ -129,7 +129,7 @@ abstract class AbstractEndpoint
      * @param string $verb   ThisData verb to be used on this endpoint
      * @param array  $data   Request body data containing event metadata
      */
-    protected function synchronousExecute($method, $verb, array $data = array())
+    protected function synchronousExecute($method, $verb, array $data = [])
     {
         $request = new Request($method, $verb, [], $this->serialize($data));
 

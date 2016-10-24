@@ -65,7 +65,7 @@ class VerifyEndpointTest extends \PHPUnit_Framework_TestCase
 
         $this->endpoint->expects($this->once())
             ->method('synchronousExecute')
-            ->willReturn(new Response(200, array(), $body, '1.1'));
+            ->willReturn(new Response(200, [], $body, '1.1'));
         $response = $this->endpoint->verify($expected['ip'], $expected['user']);
 
         $this->assertSame($response['score'], 0.75);

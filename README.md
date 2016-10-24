@@ -126,7 +126,7 @@ e.g. returning the 10 most recent `log-in` events for a user
 
 ```php
 $endpoint = $thisData->getEventsEndpoint();
-$events = $endpoint->getEvents(array("verb" => "log-in", "user_id" => 112233, "limit" => 10));
+$events = $endpoint->getEvents(["verb" => "log-in", "user_id" => 112233, "limit" => 10]);
 ```
 
 

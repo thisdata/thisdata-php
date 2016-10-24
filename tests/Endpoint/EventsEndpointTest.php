@@ -79,13 +79,13 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
     {
         $expected = [
             'ip' => '1.2.3.4',
-            'user' => array(),
+            'user' => [],
             'source' => [
               'name' => "Foo Bar",
               'logo_url' => "abcd"
             ],
-            'session' => array(),
-            'device' => array(),
+            'session' => [],
+            'device' => [],
             'user_agent' => 'useragent',
             'endpoint' => 'events',
             'method' => 'POST',
@@ -112,12 +112,12 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
     {
         $expected = [
             'ip' => '1.2.3.4',
-            'user' => array(),
-            'source' => array(),
+            'user' => [],
+            'source' => [],
             'session' => [
               "id" => "abcd1234"
             ],
-            'device' => array(),
+            'device' => [],
             'user_agent' => 'useragent',
             'endpoint' => 'events',
             'method' => 'POST',
@@ -147,9 +147,9 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
     {
         $expected = [
             'ip' => '1.2.3.4',
-            'user' => array(),
-            'source' => array(),
-            'session' => array(),
+            'user' => [],
+            'source' => [],
+            'session' => [],
             'device' => [
                 'id' => 'abcd1234'
             ],
@@ -205,7 +205,7 @@ class EventsEndpointTest extends \PHPUnit_Framework_TestCase
                 'GET',
                 'events'
             )
-            ->willReturn(new Response(200, array(), $body, '1.1'));
+            ->willReturn(new Response(200, [], $body, '1.1'));
 
         $events = $this->endpoint->getEvents();
 

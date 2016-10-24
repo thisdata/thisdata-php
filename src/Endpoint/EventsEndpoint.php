@@ -60,10 +60,10 @@ class EventsEndpoint extends AbstractEndpoint
      */
     public function trackEvent($verb, $ip, array $user = null, $userAgent = null, array $source = null, array $session = null, array $device = null)
     {
-        $event = array(
+        $event = [
             self::PARAM_VERB => $verb,
             self::PARAM_IP   => $ip
-        );
+        ];
 
         if (!is_null($userAgent)) {
             $event[self::PARAM_USER_AGENT] = $userAgent;
@@ -90,11 +90,11 @@ class EventsEndpoint extends AbstractEndpoint
             self::PARAM_SESSION__ID  => $this->findValue(self::PARAM_SESSION__ID, $session)
         ]);
         // Then pull the TD cookie if its present
-        if(isset($_COOKIE[ThisData::TD_COOKIE_NAME])) {
+        if (isset($_COOKIE[ThisData::TD_COOKIE_NAME])) {
             $event[self::PARAM_SESSION][self::PARAM_SESSION__TD_COOKIE_ID] = $_COOKIE[ThisData::TD_COOKIE_NAME];
         }
         // Then whether we expect the JS Cookie at all
-        if($this->configuration[Builder::CONF_EXPECT_JS_COOKIE]) {
+        if ($this->configuration[Builder::CONF_EXPECT_JS_COOKIE]) {
             $event[self::PARAM_SESSION][self::PARAM_SESSION__TD_COOKIE_EXPECTED] = $this->configuration[Builder::CONF_EXPECT_JS_COOKIE];
         }
 
