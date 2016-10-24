@@ -33,7 +33,7 @@ class EndpointStub extends AbstractEndpoint
         parent::execute($method, $verb, $data);
     }
 
-    public function synchronousExecute($method, $verb, array $data)
+    public function synchronousExecute($method, $verb, array $data = array())
     {
         parent::execute($method, $verb, $data);
     }
