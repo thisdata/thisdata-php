@@ -34,8 +34,9 @@ events endpoint can track successful login attempts.
 
 Documentation for API endpoints can be found here:
 
-- [Events](http://help.thisdata.com/docs/apiv1events)
-- [Verify](http://help.thisdata.com/docs/apiv1verify)
+- [POST Events](http://help.thisdata.com/docs/apiv1events)
+- [POST Verify](http://help.thisdata.com/docs/apiv1verify)
+- [GET Events](http://help.thisdata.com/docs/v1getevents)
 
 ### Tracking Events
 
@@ -114,6 +115,18 @@ if ($response['risk_level'] != "green") {
 } else {
     # Everything is OK
 }
+```
+
+### Getting a list of Events (Audit Log)
+
+You can fetch a paginated, filterable array of Events from the API. The method
+accepts any of the parameters described in the documentation: http://help.thisdata.com/docs/v1getevents
+
+e.g. returning the 10 most recent `log-in` events for a user
+
+```php
+$endpoint = $thisData->getEventsEndpoint();
+$events = $endpoint->getEvents(array("verb" => "log-in", "user_id" => 112233, "limit" => 10));
 ```
 
 

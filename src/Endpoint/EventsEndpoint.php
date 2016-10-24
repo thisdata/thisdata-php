@@ -9,8 +9,10 @@ use ThisData\Api\Builder;
  * Events Endpoint
  *
  * Track events related to user security, and send them to ThisData.
+ * Also get those events back out again.
  *
- * @see http://help.thisdata.com/docs/apiv1events
+ * @see http://help.thisdata.com/docs/apiv1events Documentation for POST /events
+ * @see http://help.thisdata.com/docs/v1getevents Documentation for  GET /events
  */
 class EventsEndpoint extends AbstractEndpoint
 {
@@ -18,11 +20,14 @@ class EventsEndpoint extends AbstractEndpoint
     /**
      * Track the successful authentication of a client.
      *
-     * @param string $ip              The IP address of the client logging in
-     * @param array  $user            An array containing id, and optionally name, email, mobile
-     * @param string|null  $userAgent The browser user agent of the client logging in
+     * @param string $ip             The IP address of the client logging in
+     * @param array  $user           An array containing id, and optionally name, email, mobile
+     * @param string|null $userAgent The browser user agent of the client logging in
+     * @param array|null $source     Source details (e.g. for multi-tenanted applications)
+     * @param array|null $session    Extra information that provides useful context about the session, for example the session ID, or some cookie information
+     * @param array|null $device     Information about the device being used
      */
-    public function trackLogIn($ip, array $user = null, $userAgent = null, array $source = null, array $session = null, array $device = null)
+    public function trackLogIn($ip, array $user, $userAgent = null, array $source = null, array $session = null, array $device = null)
     {
         $this->trackEvent(self::VERB_LOG_IN, $ip, $user, $userAgent, $source, $session, $device);
     }
@@ -30,9 +35,12 @@ class EventsEndpoint extends AbstractEndpoint
     /**
      * Track the unsuccessful authentication of a client.
      *
-     * @param string $ip              The IP address of the client logging in
-     * @param array  $user            An array containing id, and optionally name, email, mobile
-     * @param string|null  $userAgent The browser user agent of the client logging in
+     * @param string $ip             The IP address of the client logging in
+     * @param array|null $user       An optional array containing id, and optionally name, email, mobile.
+     * @param string|null $userAgent The browser user agent of the client logging in
+     * @param array|null $source     Source details (e.g. for multi-tenanted applications)
+     * @param array|null $session    Extra information that provides useful context about the session, for example the session ID, or some cookie information
+     * @param array|null $device     Information about the device being used
      */
     public function trackLogInDenied($ip, array $user = null, $userAgent = null, array $source = null, array $session = null, array $device = null)
     {
@@ -40,10 +48,15 @@ class EventsEndpoint extends AbstractEndpoint
     }
 
     /**
-     * @param string $verb
-     * @param string $ip
-     * @param array $user
-     * @param string|null $userAgent
+     * Tracks an event using the ThisData API.
+     * @param string $verb           Describes what the User did, using an English present tense verb
+     * @param string $ip             The IP address of the client logging in
+     * @param array|null $user       An optional array containing id, and optionally name, email, mobile.
+     * @param string|null $userAgent The browser user agent of the client logging in
+     * @param array|null $source     Source details (e.g. for multi-tenanted applications)
+     * @param array|null $session    Extra information that provides useful context about the session, for example the session ID, or some cookie information
+     * @param array|null $device     Information about the device being used
+     * @see AbstractEndpoint         Predefined VERB_ constants
      */
     public function trackEvent($verb, $ip, array $user = null, $userAgent = null, array $source = null, array $session = null, array $device = null)
     {
@@ -95,9 +108,9 @@ class EventsEndpoint extends AbstractEndpoint
     }
 
     /**
-     * Gets events from the ThisData API.
-     * Available request parameters can be found here:
-     *  http://help.thisdata.com/docs/v1getevents
+     * Fetches events from the ThisData API.
+     * @see http://help.thisdata.com/docs/v1getevents for request parameters
+     * @return array An array of arrays
      */
     public function getEvents($options = null)
     {
