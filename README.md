@@ -43,7 +43,7 @@ Documentation for API endpoints can be found here:
 Use the `$thisData` instance to get an instance of the events endpoint.
 
 ```php
-$events = $thisData->getEventsEndpoint();
+$endpoint = $thisData->getEventsEndpoint();
 ```
 
 Then track events:
@@ -58,10 +58,10 @@ $user = [
 ];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-$events->trackLogIn($ip, $user, $userAgent);
+$endpoint->trackLogIn($ip, $user, $userAgent);
 
 $verb = 'my-custom-verb';
-$events->trackEvent($verb, $ip, $user, $userAgent);
+$endpoint->trackEvent($verb, $ip, $user, $userAgent);
 ```
 
 When the login attempt is unsuccessful:
@@ -73,7 +73,7 @@ $user = [
     'authenticated' => false
 ];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
-$events->trackEvent(EventsEndpoint::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
+$endpoint->trackEvent(EventsEndpoint::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
 ```
 
 When you're using a multi-tenanted app:
@@ -87,7 +87,7 @@ $userAgent = $_SERVER['HTTP_USER_AGENT'];
 $source = [
     'name' => 'SubCustomer 1'
 ]
-$events->trackLogIn($ip, $user, $userAgent, $source);
+$endpoint->trackLogIn($ip, $user, $userAgent, $source);
 ```
 
 ### Verifying a User
@@ -95,8 +95,8 @@ $events->trackLogIn($ip, $user, $userAgent, $source);
 When a sensitive action is about to occur, perhaps before finalizing the
 log-in process, you can verify that the user is who they say they are, and check
 the risk that their account is being impersonated by an attacker.
-If they present a medium or high risk, force them to prove a two-factor
- authentication code.
+If they present a medium or high risk, force them to provide a two-factor
+authentication code.
 
 
 ```php
