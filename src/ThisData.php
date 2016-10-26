@@ -3,6 +3,7 @@
 namespace ThisData\Api;
 
 use ThisData\Api\Endpoint\EventsEndpoint;
+use ThisData\Api\Endpoint\VerifyEndpoint;
 use ThisData\Api\RequestHandler\RequestHandlerInterface;
 
 /**
@@ -17,6 +18,8 @@ use ThisData\Api\RequestHandler\RequestHandlerInterface;
 class ThisData
 {
     const ENDPOINT_EVENTS = 'events';
+    const ENDPOINT_VERIFY = 'verify';
+    const TD_COOKIE_NAME  = '__tdli';
 
     /**
      * @var Client
@@ -29,6 +32,11 @@ class ThisData
     private $handler;
 
     /**
+     * @var Array
+     */
+    private $configuration;
+
+    /**
      * @var array
      */
     private $endpoints = [];
@@ -38,16 +46,19 @@ class ThisData
      */
     private static $endpointClassMap = [
         self::ENDPOINT_EVENTS => EventsEndpoint::class,
+        self::ENDPOINT_VERIFY => VerifyEndpoint::class
     ];
 
     /**
      * @param Client $client
      * @param RequestHandlerInterface $handler
+     * @param array|null $configuration
      */
-    public function __construct(Client $client, RequestHandlerInterface $handler)
+    public function __construct(Client $client, RequestHandlerInterface $handler, array $configuration = null)
     {
         $this->client = $client;
         $this->handler = $handler;
+        $this->configuration = $configuration;
     }
 
     /**
@@ -56,6 +67,14 @@ class ThisData
     public function getEventsEndpoint()
     {
         return $this->getOrCreateEndpoint(self::ENDPOINT_EVENTS);
+    }
+
+    /**
+     * @return VerifyEndpoint
+     */
+    public function getVerifyEndpoint()
+    {
+        return $this->getOrCreateEndpoint(self::ENDPOINT_VERIFY);
     }
 
     /**
@@ -85,7 +104,7 @@ class ThisData
      */
     private function createEndpoint($class)
     {
-        return new $class($this->client, $this->handler);
+        return new $class($this->client, $this->handler, $this->configuration);
     }
 
     /**

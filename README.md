@@ -26,14 +26,27 @@ $thisData = ThisData::create($apiKey);
   variable, or perhaps you have a configuration solution that allows you to
   store secrets in local configuration without being shared.
 
-Use the `$thisData` instance to get an instance of an endpoint, e.g. [events](http://help.thisdata.com/docs/apiv1events).
-
-```php
-$events = $thisData->getEventsEndpoint();
-```
 
 Each endpoint will have different methods, depending on the functionality the endpoint provides. For instance, the
 events endpoint can track successful login attempts.
+
+### API Documentation
+
+Documentation for API endpoints can be found here:
+
+- [POST Events](http://help.thisdata.com/docs/apiv1events)
+- [POST Verify](http://help.thisdata.com/docs/apiv1verify)
+- [GET Events](http://help.thisdata.com/docs/v1getevents)
+
+### Tracking Events
+
+Use the `$thisData` instance to get an instance of the events endpoint.
+
+```php
+$endpoint = $thisData->getEventsEndpoint();
+```
+
+Then track events:
 
 ```php
 $ip = $_SERVER['REMOTE_ADDR'];
@@ -45,17 +58,77 @@ $user = [
 ];
 $userAgent = $_SERVER['HTTP_USER_AGENT'];
 
-$events->trackLogIn($ip, $user, $userAgent);
+$endpoint->trackLogIn($ip, $user, $userAgent);
 
-$verb = 'reset-password-attempt';
-$events->trackEvent($verb, $ip, $user, $userAgent);
+$verb = 'my-custom-verb';
+$endpoint->trackEvent($verb, $ip, $user, $userAgent);
 ```
 
-### API Documentation
+When the login attempt is unsuccessful:
 
-Documentation for API endpoints can be found here:
+```php
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor',
+    'authenticated' => false
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$endpoint->trackEvent(EventsEndpoint::VERB_LOG_IN_DENIED, $ip, $user, $userAgent);
+```
 
-- [Events](http://help.thisdata.com/docs/apiv1events)
+When you're using a multi-tenanted app:
+
+```php
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor'
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+$source = [
+    'name' => 'SubCustomer 1'
+]
+$endpoint->trackLogIn($ip, $user, $userAgent, $source);
+```
+
+### Verifying a User
+
+When a sensitive action is about to occur, perhaps before finalizing the
+log-in process, you can verify that the user is who they say they are, and check
+the risk that their account is being impersonated by an attacker.
+If they present a medium or high risk, force them to provide a two-factor
+authentication code.
+
+
+```php
+$endpoint = $thisData->getVerifyEndpoint();
+
+$ip = $_SERVER['REMOTE_ADDR'];
+$user = [
+    'id' => 'johntitor'
+];
+$userAgent = $_SERVER['HTTP_USER_AGENT'];
+
+$response = $endpoint->verify($ip, $user, $userAgent);
+
+if ($response['risk_level'] != "green") {
+    # Ask for Two Factor Authentication code
+} else {
+    # Everything is OK
+}
+```
+
+### Getting a list of Events (Audit Log)
+
+You can fetch a paginated, filterable array of Events from the API. The method
+accepts any of the parameters described in the documentation: http://help.thisdata.com/docs/v1getevents
+
+e.g. returning the 10 most recent `log-in` events for a user
+
+```php
+$endpoint = $thisData->getEventsEndpoint();
+$events = $endpoint->getEvents(["verb" => "log-in", "user_id" => 112233, "limit" => 10]);
+```
+
 
 ## Advanced
 
@@ -69,6 +142,7 @@ $builder = new Builder($apiKey);
 // Configure the builder here. See below for more details.
 // ...
 // e.g. $builder->setAsync(false);
+// $builder->setExpectJsCookie(true);
 // ...
 
 $thisData = $builder->build();
@@ -81,6 +155,17 @@ preferred, configure your builder to use synchronous requests.
 
 ```php
 $builder->setAsync(false);
+```
+
+### ThisData's Javascript library
+
+ThisData's Javascript tracking code is optional, but when included in a page
+will add a cookie called `__tdli`. If you're using the optional javascript
+library, this library will automatically pick up that cookie.
+You should also tell the API that each request _should_ come with a cookie:
+
+```php
+$builder->setExpectJsCookie(true);
 ```
 
 ### Network Configuration

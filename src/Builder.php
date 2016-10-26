@@ -18,6 +18,10 @@ use ThisData\Api\RequestHandler\SynchronousRequestHandler;
  */
 class Builder
 {
+    // Some configuration options are passed around in an array, using these
+    // keys
+    const CONF_EXPECT_JS_COOKIE  = 'expectJsCookie';
+
     /**
      * @var string
      */
@@ -32,6 +36,12 @@ class Builder
      * @var bool
      */
     private $async = true;
+
+
+    /**
+     * @var bool
+     */
+    private $expectJsCookie = false;
 
     /**
      * @var array
@@ -77,6 +87,20 @@ class Builder
     public function setAsync($async)
     {
         $this->async = (bool)$async;
+        return $this;
+    }
+
+    /**
+     * ThisData's JS library (optional) adds a cookie.
+     * If you're using the library, set this to true, so that we know to expect
+     * a cookie value
+     *
+     * @param boolean $expectJsCookie
+     * @return Builder
+     */
+    public function setExpectJsCookie($expectJsCookie)
+    {
+        $this->expectJsCookie = (bool)$expectJsCookie;
         return $this;
     }
 
@@ -182,7 +206,12 @@ class Builder
     {
         $client         = $this->buildClient();
         $requestHandler = $this->getRequestHandler();
+        // Pass through any configuration options set here which need to be made
+        // available elsewhere in the ThisData instance.
+        $configuration  = [
+            self::CONF_EXPECT_JS_COOKIE => $this->expectJsCookie
+        ];
 
-        return new ThisData($client, $requestHandler);
+        return new ThisData($client, $requestHandler, $configuration);
     }
 }
