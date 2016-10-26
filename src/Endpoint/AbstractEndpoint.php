@@ -133,7 +133,7 @@ abstract class AbstractEndpoint
     {
         $request = new Request($method, $verb, [], $this->serialize($data));
 
-        $response = $this->client->send($request, ['timeout' => 2]);
+        $response = $this->client->send($request);
         return $response;
     }
 

@@ -109,10 +109,11 @@ class EventsEndpoint extends AbstractEndpoint
 
     /**
      * Fetches events from the ThisData API.
+     * @param array|null $options An array of request parameters for filtering and paginating over events
      * @see http://help.thisdata.com/docs/v1getevents for request parameters
      * @return array An array of arrays
      */
-    public function getEvents($options = null)
+    public function getEvents(array $options = null)
     {
         $url = ThisData::ENDPOINT_EVENTS;
         if (!is_null($options)) {

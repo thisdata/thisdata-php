@@ -10,18 +10,30 @@ use ThisData\Api\Builder;
  *
  * Verify your current user, and make use of their current risk score.
  *
+ * When a sensitive action is about to occur, e.g. before finalizing the
+ * log-in process, you can verify that the user is who they say they are, and
+ * check the risk that their account is being impersonated by an attacker.
+ * If they present a medium or high risk, force them to provide a two-factor
+ * authentication code.
+ *
  * @see http://help.thisdata.com/docs/apiv1verify
  */
 class VerifyEndpoint extends AbstractEndpoint
 {
 
     /**
-     * Hits the Verify API, and returns the JSON response.
+     * Verify the current user to get the risk that their account is being
+     * hijacked.
      *
-     * @param string $verb
-     * @param string $ip
-     * @param array $user
-     * @param string|null $userAgent
+     * @param string $ip             The IP address of the client logging in
+     * @param array $user            Array containing id, and optionally name, email, mobile.
+     * @param string|null $userAgent The browser user agent of the client logging in
+     * @param array|null $source     Source details (e.g. for multi-tenanted applications)
+     * @param array|null $session    Extra information that provides useful context about the session, for example the session ID, or some cookie information
+     * @param array|null $device     Information about the device being used
+     *
+     * @return an Array with details on the current risk (a JSON representation of the API response).
+     * @see http://help.thisdata.com/docs/apiv1verify
      */
     public function verify($ip, array $user, $userAgent = null, array $source = null, array $session = null, array $device = null)
     {

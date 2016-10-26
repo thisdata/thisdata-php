@@ -95,7 +95,7 @@ class Builder
      * If you're using the library, set this to true, so that we know to expect
      * a cookie value
      *
-     * @param boolean $async
+     * @param boolean $expectJsCookie
      * @return Builder
      */
     public function setExpectJsCookie($expectJsCookie)
